@@ -2,8 +2,9 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\TransactionController;
+use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 
 // Public routes
 Route::get('/', function () {
@@ -28,6 +29,7 @@ Route::middleware(EnsureFrontendRequestsAreStateful::class)->group(function () {
 
 Route::middleware(['auth:sanctum', EnsureFrontendRequestsAreStateful::class])->group(function () {
 
-    Route::resource('transactions', \App\Http\Controllers\TransactionController::class);
-    
+    Route::post('transactions/status', [TransactionController::class, 'status']);
+    Route::resource('transactions', TransactionController::class);
+
 });

@@ -39,6 +39,30 @@ class TransactionController extends Controller
         ]);
     }
 
+    public function status(Request $request)
+    {
+        $request->validate([
+            'order_id' => 'required'
+        ]);
+
+        $trx = Transaction::where('order_id', $request->order_id)->first();
+
+        if(! $trx) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Transaction not found'
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'order_id' => $trx->order_id,
+                'status' => $trx->status
+            ]
+        ]);
+    }
+
     public function store(Request $request) {
         $request->validate([
             'amount' => 'required|numeric',
