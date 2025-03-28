@@ -35,6 +35,9 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    const ROLE_USER = 'user';
+    const ROLE_ADMIN = 'admin';
+
     /**
      * Get the attributes that should be cast.
      *

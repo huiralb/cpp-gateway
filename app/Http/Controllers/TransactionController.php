@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Services\Deposit;
 use App\Models\Transaction;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use App\Actions\UpdatePocketTransaction;
 use Illuminate\Support\Facades\Log;
+use App\Actions\UpdatePocketTransaction;
 
 class TransactionController extends Controller
 {
@@ -25,7 +26,17 @@ class TransactionController extends Controller
             ]);
         }
 
-        return response()->noContent();
+        $query = Transaction::query();
+
+        if( $request->user()->role == User::ROLE_USER )
+        {
+            $query->where('user_id', $request->user()->id);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $query->get()
+        ]);
     }
 
     public function store(Request $request) {
