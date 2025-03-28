@@ -15,6 +15,7 @@ return new class extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(User::class);
+            $table->string('order_id');
             $table->string('trx_id')->nullable();
             $table->decimal('amount', 16, 2);
             $table->string('type')->comment('deposit, withdraw');

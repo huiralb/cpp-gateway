@@ -24,3 +24,10 @@ Route::middleware(EnsureFrontendRequestsAreStateful::class)->group(function () {
     Route::post('/login', [AuthController::class, 'login'])->name('login');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
+
+
+Route::middleware(['auth:sanctum', EnsureFrontendRequestsAreStateful::class])->group(function () {
+
+    Route::resource('transactions', \App\Http\Controllers\TransactionController::class);
+
+});

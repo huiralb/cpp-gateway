@@ -29,6 +29,7 @@ class TransactionSeeder extends Seeder
             'user_id' => $userId,
             'type' => Transaction::TYPE_DEPOSIT,
             'status' => Transaction::STATUS_PENDING,
+            'trx_id' => null
         ]);
 
         Pocket::create([
