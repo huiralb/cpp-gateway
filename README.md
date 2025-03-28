@@ -3,6 +3,7 @@
 #### Requirement
 - PHP version >= 8.0
 - Mysql
+- Node js >= 20
 
 #### Installation
 Clone this project or download
@@ -20,8 +21,10 @@ Clone this project or download
     ```bash
     php artisan key:generate
     ```
-- ###### Setup database
+- ###### Setup environment
     ```bash
+    APP_URL=http://cpp-gateway.test
+    ...
     DB_CONNECTION=mysql
     DB_HOST=127.0.0.1
     DB_PORT=3306
@@ -33,3 +36,13 @@ Clone this project or download
     ```bash
     php artisan migrate:fresh --seed
     ```
+- ###### Build 
+    ```bash
+    npm install
+    npm run build
+    ```
+- ###### Access http://cpp-gateway.test
+#### Frontend Development
+```bash
+npm run dev
+```
