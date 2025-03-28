@@ -3,6 +3,7 @@ namespace App\Actions;
 
 use App\Models\Pocket;
 use App\Models\Transaction;
+use Illuminate\Support\Facades\Log;
 
 class UpdatePocketTransaction
 {
@@ -17,5 +18,7 @@ class UpdatePocketTransaction
         {
             $transaction->user->pocket()->decrement('amount', $transaction->amount);
         }
+
+        Log::info("Pocket updated for transaction: {$transaction->id}");
     }
 }

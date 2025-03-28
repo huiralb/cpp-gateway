@@ -14,7 +14,7 @@ class Deposit {
     {
         $timestamp = now()->timestamp;
 
-        Http::withHeader([
+        Http::withHeaders([
             'Authorization' => "Bearer ". $this->getToken()
         ])->post('https://yourdomain.com/deposit', [
             'order_id' => $this->orderId,

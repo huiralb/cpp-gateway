@@ -19,7 +19,7 @@ class TransactionController extends Controller
 
         $transaction = Transaction::create([
             'user_id' => $request->user()->id,
-            'order_id' => Str::ulid(),
+            'order_id' => Str::lower( Str::ulid() ),
             'amount' => $request->amount,
             'type' => $request->type,
             'status' => Transaction::STATUS_PENDING,
@@ -36,23 +36,30 @@ class TransactionController extends Controller
         $callback = (new Deposit($transaction->order_id, $transaction->amount))->send();
 
         /**
-         * ---------------------------
+         * -----------------------------------------------------
          * in real project, usually we handle it via webhook
          * but for the sake of simplicity, we handle it here
-         * ---------------------------
+         * -----------------------------------------------------
          */
         if($callback->success)
         {
-            $transaction = Transaction::where('order_id', $callback->data->order_id)->first();
+            Log::info('Transaction updated {order_id}', [
+                'order_id' => $transaction->order_id
+            ]);
 
-            if($transaction)
+            $updatedTransaction = Transaction::where('order_id', $callback->data->order_id)->first();
+
+            if($updatedTransaction)
             {
-                $transaction->status = Transaction::STATUS_SUCCESS;
-                $transaction->save();
-                (new UpdatePocketTransaction($transaction));
+                $updatedTransaction->status = Transaction::STATUS_SUCCESS;
+                $updatedTransaction->trx_id = $callback->data->trxId;
+                $updatedTransaction->save();
+
+                (new UpdatePocketTransaction($updatedTransaction));
             }
         }
 
-        return response()->json($transaction);
+        return response()->json($transaction)
+            ->withCookie(cookie('latest_order_id', $transaction->order_id));
     }
 }

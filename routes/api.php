@@ -29,5 +29,5 @@ Route::middleware(EnsureFrontendRequestsAreStateful::class)->group(function () {
 Route::middleware(['auth:sanctum', EnsureFrontendRequestsAreStateful::class])->group(function () {
 
     Route::resource('transactions', \App\Http\Controllers\TransactionController::class);
-
+    
 });
