@@ -11,6 +11,23 @@ use Illuminate\Support\Facades\Log;
 
 class TransactionController extends Controller
 {
+    public function index(Request $request) {
+        if(
+            $request->has('order_id') &&
+            $trx = Transaction::where('order_id', $request->order_id)->first()
+        ){
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'order_id' => $trx->order_id,
+                    'status' => $trx->status
+                ]
+            ]);
+        }
+
+        return response()->noContent();
+    }
+
     public function store(Request $request) {
         $request->validate([
             'amount' => 'required|numeric',
@@ -59,7 +76,11 @@ class TransactionController extends Controller
             }
         }
 
-        return response()->json($transaction)
-            ->withCookie(cookie('latest_order_id', $transaction->order_id));
+        return response()->json([
+            'success' => true,
+            'data' => $transaction
+        ])
+         // info for the next postman's request
+        ->withCookie(cookie('latest_order_id', $transaction->order_id));
     }
 }
