@@ -63,7 +63,7 @@
           </div>
 
           <button @click="handleWithdraw"
-            class="w-full mt-6 bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition duration-300">
+            class="w-full mt-6 bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition duration-300 disabled:opacity-50" :disabled="isDisabledWithdraw">
             Withdraw Funds
           </button>
         </div>
@@ -80,25 +80,20 @@ import { usePocketStore } from '../stores/pocket'
 
 const paymentStore = usePaymentStore()
 const pocketStore = usePocketStore()
-// Deposit state
 const depositAmount = ref('')
-
-// Withdraw state
 const withdrawAmount = ref('')
-const withdrawMethod = ref('')
+const progressDeposit = ref(false)
+const progressWithdraw = ref(false)
 
-// Balance state
-const balance = ref(0)
 const balanceFormatted = computed(() => pocketStore.balance)
-
 const isDisabledDeposit = computed(() => {
   return depositAmount.value <= 0 || progressDeposit.value
 })
-
-const progressDeposit = ref(false)
+const isDisabledWithdraw = computed(() => {
+  return withdrawAmount.value <= 0 || progressWithdraw.value || pocketStore.balance <= 0
+})
 
 onMounted(() => {
-  // balance.value = pocketStore.balance
   pocketStore.get()
 })
 
@@ -130,18 +125,34 @@ const handleDeposit = async () => {
     progressDeposit.value = false
   }
 }
-
-const handleWithdraw = () => {
+// Methods
+const handleWithdraw = async () => {
   // Basic validation
-  if (!withdrawAmount.value || !withdrawMethod.value) {
-    alert('Please fill in all withdrawal fields')
+  if (!withdrawAmount.value) {
+    toast.error('Please fill in all deposit fields')
+    return
+  }
+  if (withdrawAmount.value <= 0 || withdrawAmount.value > pocketStore.balance) {
+    toast.error('Deposit amount must be greater than 0 or less than your balance')
     return
   }
 
-  // TODO: Implement actual withdrawal logic
-  console.log('Withdraw', {
-    amount: withdrawAmount.value,
-    method: withdrawMethod.value
-  })
+  try {
+    progressWithdraw.value = true
+    const { data } = await paymentStore.send({amount: withdrawAmount.value, type: 'withdraw'})
+
+    if(data.success) {
+      toast.success('withdraw successful')
+      withdrawAmount.value = null
+      pocketStore.get()
+      return
+    }
+    throw data.message || "withdraw failed";
+  } catch (error) {
+    toast.error(error)
+  } finally {
+    progressWithdraw.value = false
+  }
 }
+
 </script>

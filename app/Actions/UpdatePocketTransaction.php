@@ -7,9 +7,15 @@ use Illuminate\Support\Facades\Log;
 
 class UpdatePocketTransaction
 {
-    public static function handle(Transaction $transaction)
+    public static function handle(Transaction $transaction, $callback)
     {
         $pocket = Pocket::where('user_id', $transaction->user_id)->first();
+        Log::info('Transaction update after {order_id}', [
+            'order_id' => $transaction->order_id
+        ]);
+        $transaction->status = Transaction::STATUS_SUCCESS;
+        $transaction->trx_id = $callback->data->trxId;
+        $transaction->save();
 
         if($transaction->type == Transaction::TYPE_DEPOSIT)
         {

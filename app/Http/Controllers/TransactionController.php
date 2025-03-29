@@ -7,6 +7,7 @@ use App\Services\Deposit;
 use App\Models\Transaction;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Actions\UpdatePocketTransaction;
 
@@ -69,54 +70,65 @@ class TransactionController extends Controller
             'type' => 'required|in:deposit,withdraw',
         ]);
 
-        $transaction = Transaction::create([
-            'user_id' => $request->user()->id,
-            'order_id' => Str::lower( Str::ulid() ),
-            'amount' => $request->amount,
-            'type' => $request->type,
-            'status' => Transaction::STATUS_PENDING,
-        ]);
+        DB::beginTransaction();
 
-        Log::info('Transaction created {order_id}', [
-            'order_id' => $transaction->order_id
-        ]);
-        /**
-         * ----------------------------
-         * Request to Third Party
-         * ----------------------------
-         */
-        $callback = (new Deposit($transaction->order_id, $transaction->amount))->send();
-
-        Log::info('callback'. json_encode($callback));
-        /**
-         * -----------------------------------------------------
-         * in real project, usually we handle it via webhook
-         * but for the sake of simplicity, we handle it here
-         * -----------------------------------------------------
-         */
-        if($callback->success)
-        {
-
-            $updatedTransaction = Transaction::where('order_id', $callback->data->order_id)->first();
-
-            if($updatedTransaction)
+        try {
+            if(  $request->type == Transaction::TYPE_WITHDRAW && $request->user()->pocket->amount < $request->amount )
             {
-                Log::info('Transaction update after {order_id}', [
-                    'order_id' => $transaction->order_id
-                ]);
-                $updatedTransaction->status = Transaction::STATUS_SUCCESS;
-                $updatedTransaction->trx_id = $callback->data->trxId;
-                $updatedTransaction->save();
-
-                UpdatePocketTransaction::handle($updatedTransaction);
+                throw new \Exception('Insufficient balance');
             }
-        }
 
-        return response()->json([
-            'success' => true,
-            'data' => $transaction
-        ])
-         // info for the next postman's request
-        ->withCookie(cookie('latest_order_id', $transaction->order_id));
+            $transaction = Transaction::create([
+                'user_id' => $request->user()->id,
+                'order_id' => Str::lower( Str::ulid() ),
+                'amount' => $request->amount,
+                'type' => $request->type,
+                'status' => Transaction::STATUS_PENDING,
+            ]);
+
+            Log::info('Transaction created {order_id}', [
+                'order_id' => $transaction->order_id
+            ]);
+            /**
+             * ----------------------------
+             * Request to Third Party
+             * ----------------------------
+             */
+            $callback = (new Deposit($transaction->order_id, $transaction->amount))->send();
+
+            Log::info('callback'. json_encode($callback));
+            /**
+             * -----------------------------------------------------
+             * in real project, usually we handle it via webhook
+             * but for the sake of simplicity, we handle it here
+             * -----------------------------------------------------
+             */
+            if($callback->success)
+            {
+
+                $updatedTransaction = Transaction::where('order_id', $callback->data->order_id)->first();
+
+                if($updatedTransaction)
+                {
+                    UpdatePocketTransaction::handle($updatedTransaction, $callback);
+                }
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'data' => $transaction
+            ])
+             // info for the next postman's request
+            ->withCookie(cookie('latest_order_id', $transaction->order_id));
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ]);
+        }
     }
 }
