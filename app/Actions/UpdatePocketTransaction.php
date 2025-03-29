@@ -10,6 +10,16 @@ class UpdatePocketTransaction
     public static function handle(Transaction $transaction, $callback)
     {
         $pocket = Pocket::where('user_id', $transaction->user_id)->first();
+
+        if(! $pocket) {
+            $pocket = Pocket::create([
+                'user_id' => $transaction->user_id,
+                'name' => 'Main Pocket',
+                'amount' => $transaction->amount,
+                'description' => 'Main pocket for user',
+            ]);
+        }
+
         Log::info('Transaction update after {order_id}', [
             'order_id' => $transaction->order_id
         ]);
