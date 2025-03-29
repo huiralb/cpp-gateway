@@ -1,7 +1,6 @@
 <template>
   <div class="p-6 bg-white rounded-lg shadow">
     <h2 class="text-xl font-bold text-gray-800 mb-6">Transaction History</h2>
-
     <!-- Search and Filter -->
     <div class="flex flex-col md:flex-row gap-4 mb-6">
       <div class="relative flex-grow">
@@ -30,6 +29,8 @@
         <option value="failed">Failed</option>
       </select>
     </div>
+    
+    <Summary :items="payment.summary"></Summary>
 
     <!-- Table -->
     <div class="overflow-x-auto">
@@ -112,6 +113,7 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import UserAvatar from './column/UserAvatar.vue';
+import Summary from './Summary.vue';
 import { usePaymentStore } from '../stores/payment';
 import { onMounted } from 'vue';
 import { formatDate, formatCurrency, getStatusClasses, getTypeClasses } from '../utils/formatter';

@@ -31,10 +31,26 @@ class TransactionController extends Controller
             $query->where('status', $request->status);
         }
 
+        $summary = [
+            'deposit' => $this->getAmount('deposit', $query),
+            'withdraw' => $this->getAmount('withdraw', $query),
+            'total' => $this->getAmount('total', $query),
+        ];
+
         return response()->json([
             'success' => true,
-            'items' => $query->paginate(5)
+            'items' => $query->paginate(5),
+            'summary' => $summary
         ]);
+    }
+
+    protected function getAmount($type, $query) {
+        $newQuery = clone $query;
+
+        if($type == 'total') {
+            return $newQuery->sum('amount');
+        }
+        return $newQuery->where('type', $type)->sum('amount');
     }
 
     public function status(Request $request)

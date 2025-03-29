@@ -8,6 +8,7 @@ export const usePaymentStore = defineStore("payment", {
     amount: null,
     type: null,
     items: null,
+    summary: null
   }),
   actions: {
     async send({ amount, type }) {
@@ -44,6 +45,7 @@ export const usePaymentStore = defineStore("payment", {
 
         if(response.data.success) {
           this.items = response.data.items;
+          this.summary = response.data.summary;
         }
 
         return response;
