@@ -87,6 +87,7 @@ class TransactionController extends Controller
          */
         $callback = (new Deposit($transaction->order_id, $transaction->amount))->send();
 
+        Log::info('callback'. json_encode($callback));
         /**
          * -----------------------------------------------------
          * in real project, usually we handle it via webhook
@@ -95,19 +96,19 @@ class TransactionController extends Controller
          */
         if($callback->success)
         {
-            Log::info('Transaction updated {order_id}', [
-                'order_id' => $transaction->order_id
-            ]);
 
             $updatedTransaction = Transaction::where('order_id', $callback->data->order_id)->first();
 
             if($updatedTransaction)
             {
+                Log::info('Transaction update after {order_id}', [
+                    'order_id' => $transaction->order_id
+                ]);
                 $updatedTransaction->status = Transaction::STATUS_SUCCESS;
                 $updatedTransaction->trx_id = $callback->data->trxId;
                 $updatedTransaction->save();
 
-                (new UpdatePocketTransaction($updatedTransaction));
+                UpdatePocketTransaction::handle($updatedTransaction);
             }
         }
 

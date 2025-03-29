@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PocketController;
 use App\Http\Controllers\TransactionController;
 use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 
@@ -31,5 +32,5 @@ Route::middleware(['auth:sanctum', EnsureFrontendRequestsAreStateful::class])->g
 
     Route::post('transactions/status', [TransactionController::class, 'status']);
     Route::resource('transactions', TransactionController::class);
-
+    Route::get('pocket', [PocketController::class, 'pocket']);
 });

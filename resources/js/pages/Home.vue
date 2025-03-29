@@ -1,27 +1,30 @@
 <!-- src/views/DashboardView.vue -->
 <template>
-    <div class="p-6">
-      <h1 class="text-3xl font-bold mb-6">Dashboard</h1>
-      <p>Welcome to the authenticated dashboard!</p>
-      <button
-        @click="logout"
-        class="mt-4 bg-red-500 text-white px-4 py-2 rounded"
-      >
-        Logout
-      </button>
-    </div>
-  </template>
+  <div class="py-4 px-6 flex justify-center items-center mx-auto ">
+    <h1 class="text-3xl font-bold">CPP Payment Gateway</h1>
 
-  <script setup>
-  import { useRouter } from 'vue-router'
+    <button @click="logout" class="ml-auto bg-red-500 text-white px-4 py-2 rounded">
+      Logout
+    </button>
+  </div>
 
-  const router = useRouter()
+  <div class="min-h-screen bg-gray-100 p-4">
+      <Payment />
+  </div>
 
-  const logout = () => {
-    // Remove authentication token
-    localStorage.removeItem('token')
+</template>
 
-    // Redirect to login page
-    router.push('/login')
-  }
-  </script>
+<script setup>
+import { useRouter } from 'vue-router'
+import Payment from '../components/Payment.vue'
+
+const router = useRouter()
+
+const logout = () => {
+  // Remove authentication token
+  localStorage.removeItem('token')
+
+  // Redirect to login page
+  router.push('/login')
+}
+</script>
