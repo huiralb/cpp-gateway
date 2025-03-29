@@ -29,8 +29,8 @@
         <option value="failed">Failed</option>
       </select>
     </div>
-    
-    <Summary :items="payment.summary"></Summary>
+
+    <Summary v-if="payment.summary" :items="payment.summary"></Summary>
 
     <!-- Table -->
     <div class="overflow-x-auto">

@@ -10,37 +10,47 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class TransactionSeeder extends Seeder
 {
+    protected $userId = 1;
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        $userId = 1;
 
         Transaction::truncate();
         Pocket::truncate();
 
-        Transaction::factory(2)->create([
-            'user_id' => $userId,
-            'type' => Transaction::TYPE_DEPOSIT,
-            'status' => Transaction::STATUS_SUCCESS,
+        Transaction::factory(5)->create([
+            'user_id' => $this->userId,
         ]);
-        Transaction::factory(2)->create([
-            'user_id' => $userId,
+        
+        Transaction::factory(5)->create([
+            'user_id' => $this->userId,
             'type' => Transaction::TYPE_DEPOSIT,
-            'status' => Transaction::STATUS_PENDING,
-            'trx_id' => null
+            'status' => Transaction::STATUS_SUCCESS
         ]);
 
         Pocket::create([
-            'user_id' => $userId,
+            'user_id' => $this->userId,
             'name' => 'Main Pocket',
-            'amount' => Transaction::where([
-                'user_id' => $userId,
-                'type' => Transaction::TYPE_DEPOSIT,
-                'status' => Transaction::STATUS_SUCCESS
-            ])->sum('amount'),
+            'amount' => $this->getAmount(),
             'description' => 'Main pocket for user',
         ]);
+    }
+
+    protected function getAmount() {
+        $deposit = Transaction::where([
+            'user_id' => $this->userId,
+            'type' => Transaction::TYPE_DEPOSIT,
+            'status' => Transaction::STATUS_SUCCESS
+        ])->sum('amount');
+
+        $withdraw = Transaction::where([
+            'user_id' => $this->userId,
+            'type' => Transaction::TYPE_WITHDRAW,
+            'status' => Transaction::STATUS_SUCCESS
+        ])->sum('amount');
+
+        return $deposit - $withdraw;
     }
 }

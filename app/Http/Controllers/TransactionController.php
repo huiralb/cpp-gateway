@@ -93,7 +93,7 @@ class TransactionController extends Controller
 
             $transaction = Transaction::create([
                 'user_id' => $request->user()->id,
-                'order_id' => Str::lower( Str::ulid() ),
+                'order_id' => "trx-".uniqid(),
                 'amount' => $request->amount,
                 'type' => $request->type,
                 'status' => Transaction::STATUS_PENDING,

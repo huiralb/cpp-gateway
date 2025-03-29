@@ -1,5 +1,5 @@
 <template>
-  <div class="p-6 bg-gray-100">
+  <div class="p-6">
     <!-- Summary Cards -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
       <!-- Success Card -->
