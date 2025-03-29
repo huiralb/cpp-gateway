@@ -14,29 +14,26 @@ use App\Actions\UpdatePocketTransaction;
 class TransactionController extends Controller
 {
     public function index(Request $request) {
-        if(
-            $request->has('order_id') &&
-            $trx = Transaction::where('order_id', $request->order_id)->first()
-        ){
-            return response()->json([
-                'success' => true,
-                'data' => [
-                    'order_id' => $trx->order_id,
-                    'status' => $trx->status
-                ]
-            ]);
-        }
-
-        $query = Transaction::query();
+        $query = Transaction::query()->with('user')->orderBy('created_at', 'desc');
 
         if( $request->user()->role == User::ROLE_USER )
         {
             $query->where('user_id', $request->user()->id);
         }
 
+        if( $request->has('search') && $request->search )
+        {
+            $query->where('order_id', 'like', '%'.$request->search.'%');
+        }
+
+        if( $request->has('status') && $request->status !== 'all' )
+        {
+            $query->where('status', $request->status);
+        }
+
         return response()->json([
             'success' => true,
-            'data' => $query->get()
+            'items' => $query->paginate(5)
         ]);
     }
 

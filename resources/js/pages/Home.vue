@@ -9,7 +9,13 @@
   </div>
 
   <div class="min-h-screen bg-gray-100 p-4">
+    <template v-if="auth.user.role == 'admin'">
+      <History />
+    </template>
+
+    <template v-if="auth.user.role == 'user'">
       <Payment />
+    </template>
   </div>
 
 </template>
@@ -17,8 +23,13 @@
 <script setup>
 import { useRouter } from 'vue-router'
 import Payment from '../components/Payment.vue'
+import { useAuthStore } from '../stores/auth'
+import History from '../components/History.vue'
 
 const router = useRouter()
+const auth = useAuthStore()
+
+console.log('auth', auth.user)
 
 const logout = () => {
   // Remove authentication token

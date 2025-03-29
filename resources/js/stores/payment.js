@@ -7,6 +7,7 @@ export const usePaymentStore = defineStore("payment", {
   state: () => ({
     amount: null,
     type: null,
+    items: null,
   }),
   actions: {
     async send({ amount, type }) {
@@ -29,7 +30,7 @@ export const usePaymentStore = defineStore("payment", {
       }
     },
 
-    async get() {
+    async get(params = {page: 1}) {
       try {
         // get token from auth store
         const auth = useAuthStore();
@@ -37,7 +38,13 @@ export const usePaymentStore = defineStore("payment", {
         // Set default Authorization header
         axios.defaults.headers.common["Authorization"] = `Bearer ${auth.token}`;
 
-        const response = await axios.get("/transactions");
+        const response = await axios.get("/transactions", {
+          params: params
+        });
+
+        if(response.data.success) {
+          this.items = response.data.items;
+        }
 
         return response;
 
