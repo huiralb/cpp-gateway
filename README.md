@@ -52,6 +52,15 @@ Clone this project or download
     ```
 
 - ###### Access http://cpp-gateway.test
+    ```bash
+    # User
+    email: user@example.com
+    password: pa$$word
+
+    # Admin
+    email: admin@example.com
+    password: pa$$word
+    ```
 #### Frontend Development
 ```bash
 npm install
