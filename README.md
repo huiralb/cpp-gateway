@@ -45,6 +45,11 @@ Clone this project or download
     ```bash
     php artisan migrate:fresh --seed
     ```
+- ##### Build frontend
+    ```bash
+    npm install
+    npm run dev
+    ```
 
 - ###### Access http://cpp-gateway.test
 #### Frontend Development
