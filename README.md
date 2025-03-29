@@ -1,5 +1,6 @@
 # CPP Payment Gateway
-
+Simple payment gateway. Built with Laravel. **Without Inertiajs**.
+Backend API and SPA vue js 3 as frontend in one repository.
 #### Requirement
 - PHP version >= 8.0
 - Mysql
@@ -36,13 +37,17 @@ Clone this project or download
     ```bash
     php artisan migrate:fresh --seed
     ```
-- ###### Build 
-    ```bash
-    npm install
-    npm run build
-    ```
+
 - ###### Access http://cpp-gateway.test
 #### Frontend Development
 ```bash
+npm install
 npm run dev
 ```
+
+###### build for production  if needed
+```bash
+npm run build
+```
+
+#### Postman
