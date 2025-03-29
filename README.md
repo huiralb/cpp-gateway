@@ -3,9 +3,11 @@ Simple payment gateway. Built with Laravel. **Without Inertiajs**.
 Backend API and SPA vue js 3 as frontend in one repository.
 
 
+![Alt Structure](./docs/structure.png)
+
 ![Alt deposit](./docs/deposit.png)
 
-![Alt deposit](./docs/history.png)
+![Alt History](./docs/history.png)
 
 #### Requirement
 - PHP version >= 8.0
