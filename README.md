@@ -1,6 +1,12 @@
 # CPP Payment Gateway
 Simple payment gateway. Built with Laravel. **Without Inertiajs**.
 Backend API and SPA vue js 3 as frontend in one repository.
+
+
+![Alt deposit](./docs/deposit.png)
+
+![Alt deposit](./docs/history.png)
+
 #### Requirement
 - PHP version >= 8.0
 - Mysql
@@ -51,3 +57,4 @@ npm run build
 ```
 
 #### Postman
+[Postman collection](https://github.com/huiralb/cpp-gateway/blob/master/docs/cpp-gateway.postman_collection.json)
